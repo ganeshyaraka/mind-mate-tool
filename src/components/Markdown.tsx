@@ -5,7 +5,8 @@ type Block =
   | { type: "h"; level: number; text: string }
   | { type: "p"; text: string }
   | { type: "ul"; items: string[] }
-  | { type: "ol"; items: string[] };
+  | { type: "ol"; items: string[] }
+  | { type: "hr" };
 
 function parse(markdown: string): Block[] {
   const lines = markdown.replace(/\r/g, "").split("\n");
@@ -23,6 +24,11 @@ function parse(markdown: string): Block[] {
     const line = raw.trim();
     if (!line) {
       flushParagraph();
+      continue;
+    }
+    if (/^([-*_])\1{2,}$/.test(line)) {
+      flushParagraph();
+      blocks.push({ type: "hr" });
       continue;
     }
     const heading = /^(#{1,4})\s+(.*)$/.exec(line);
@@ -84,6 +90,9 @@ export function Markdown({ content }: { content: string }) {
   return (
     <div className="space-y-4 leading-relaxed text-foreground">
       {blocks.map((block, i) => {
+        if (block.type === "hr") {
+          return <hr key={i} className="border-border" />;
+        }
         if (block.type === "h") {
           const size =
             block.level <= 2 ? "text-xl" : block.level === 3 ? "text-lg" : "text-base";

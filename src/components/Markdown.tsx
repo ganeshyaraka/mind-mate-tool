@@ -28,23 +28,23 @@ function parse(markdown: string): Block[] {
     const heading = /^(#{1,4})\s+(.*)$/.exec(line);
     if (heading) {
       flushParagraph();
-      blocks.push({ type: "h", level: heading[1].length, text: heading[2] });
+      blocks.push({ type: "h", level: heading[1]!.length, text: heading[2] ?? "" });
       continue;
     }
     const bullet = /^[-*•]\s+(.*)$/.exec(line);
     if (bullet) {
       flushParagraph();
       const last = blocks[blocks.length - 1];
-      if (last && last.type === "ul") last.items.push(bullet[1]);
-      else blocks.push({ type: "ul", items: [bullet[1]] });
+      if (last && last.type === "ul") last.items.push(bullet[1] ?? "");
+      else blocks.push({ type: "ul", items: [bullet[1] ?? ""] });
       continue;
     }
     const numbered = /^(\d+)[.)]\s+(.*)$/.exec(line);
     if (numbered) {
       flushParagraph();
       const last = blocks[blocks.length - 1];
-      if (last && last.type === "ol") last.items.push(numbered[2]);
-      else blocks.push({ type: "ol", items: [numbered[2]] });
+      if (last && last.type === "ol") last.items.push(numbered[2] ?? "");
+      else blocks.push({ type: "ol", items: [numbered[2] ?? ""] });
       continue;
     }
     paragraph.push(line);
